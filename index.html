@@ -38,7 +38,7 @@
             </div>
             <div class="navbar-menu">
                 <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-                    <a class="navbar-item" href="https://yuxinn-j.github.io/">
+                    <a class="navbar-item" href="https://ycgu.site/">
                     <span class="icon">
                             <i class="fas fa-home"></i>
                     </span>
@@ -55,7 +55,8 @@
                                     <span class="nested-caret" aria-hidden="true">▸</span>
                                 </button>
                                 <div class="navbar-nested-menu" role="menu">
-                                    <a class="navbar-item" role="menuitem" href="https://adaptable-world-model.github.io/">AdaWorld</a>
+                                    <a class="navbar-item" role="menuitem" href="https://csu-jpg.github.io/MIND.github.io/">MIND</a>
+                                    <a class="navbar-item" role="menuitem" href="https://showlab.github.io/Olaf-World/">Olaf-World</a>
                                 </div>
                             </div>
                             <div class="navbar-nested">
@@ -64,7 +65,9 @@
                                     <span class="nested-caret" aria-hidden="true">▸</span>
                                 </button>
                                 <div class="navbar-nested-menu" role="menu">
-                                    <a class="navbar-item" role="menuitem" href="https://csu-jpg.github.io/MIND.github.io/">MIND</a>
+                                    <a class="navbar-item" role="menuitem" href="https://farlongctx.github.io/">FAR</a>
+                                    <a class="navbar-item" role="menuitem" href="https://hanlab.mit.edu/projects/dc-gen">DC-Gen</a>
+                                    <a class="navbar-item" role="menuitem" href="https://hanlab.mit.edu/projects/dc-videogen">DC-VideoGen</a>
                                 </div>
                             </div>
                         </div>
@@ -94,15 +97,15 @@
             <p class="conference">Arxiv 2026</p>
             
             <div class="links">
-                <a href="https://arxiv.org/abs/2602.10104" class="button button-with-icon" aria-label="Paper on arXiv">
+                <a href="https://arxiv.org/" class="button button-with-icon" aria-label="arXiv">
                     <i class="fas fa-file-alt button-icon-fa" aria-hidden="true"></i>
                     arXiv
                 </a>
-                <a href="https://github.com/showlab/Olaf-World" class="button button-with-icon" aria-label="Code on GitHub">
+                <a href="https://github.com/" class="button button-with-icon" aria-label="GitHub">
                     <i class="fab fa-github button-icon-fa" aria-hidden="true"></i>
                     Code
                 </a>
-                <a href="https://huggingface.co/showlab" class="button button-with-icon" aria-label="Model on Hugging Face">
+                <a href="https://huggingface.co/" class="button button-with-icon" aria-label="Hugging Face">
                     <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="" class="button-icon-img" width="20" height="20">
                     Model
                 </a>
@@ -232,67 +235,100 @@
                 <h3 class="method-title-one-line">Main Result</h3>
                 <ul class="method-overview-points base-model-preservation-intro">
                     <li>
-                        <span class="method-point-title">Base model preservation</span>
-                        <strong>AnyFlow</strong> <b>better preserves</b> knowledge from the pretrained flow-matching teacher—visual and motion structure—relative to distillation that forces every step toward a single data endpoint.
+                        <span class="method-point-title">Base model preservation:</span>
+                        <strong>AnyFlow</strong> <b>better preserves</b> knowledge (learned velocity field) from the pretrained video diffusion model, compared to the consistency formulation. 
                     </li>
                 </ul>
                 <div class="figure-container figure-container--paradigm base-model-preservation-examples">
-                    <p class="teaser-track-title base-model-preservation-examples-title">Examples (placeholders)</p>
-                    <div class="base-model-placeholder-grid">
-                        <div class="base-model-placeholder-cell">
+                    <div class="base-preservation-prompt">
+                        <span class="base-preservation-prompt-label">Prompt</span>
+                        <p class="base-preservation-prompt-text">a cooking tutorial featuring a man in a kitchen. He is wearing a white t-shirt and a black apron. In the first frame, he is holding a bowl and appears to be explaining something. In the second frame, he is mixing ingredients in the bowl. In the third frame, he is pouring the mixture into another bowl. The kitchen is well-equipped with various appliances and utensils. There are also other people in the background, possibly assisting with the cooking process. The style of the video is informative and instructional, with a focus on the cooking process.</p>
+                    </div>
+                    <div class="base-preservation-comparison">
+                        <div class="base-preservation-teacher">
+                            <p class="base-preservation-col-title">Teacher model</p>
+                            <div class="main-result-nfe-chip">50 NFEs</div>
                             <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
-                                <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                <source src="./assets/videos/ablation_backward/teacher_model/01_a_cooking_tutorial_featuring_a_man_in_a_.mp4" type="video/mp4">
                             </video>
-                            <p class="video-label">Placeholder example 1</p>
                         </div>
-                        <div class="base-model-placeholder-cell">
-                            <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
-                                <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_4/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
-                            </video>
-                            <p class="video-label">Placeholder example 2</p>
-                        </div>
-                        <div class="base-model-placeholder-cell">
-                            <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
-                                <source src="./assets/videos/teaser/rcm/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
-                            </video>
-                            <p class="video-label">Placeholder example 3</p>
+                        <div class="base-preservation-student-rows">
+                            <div class="base-preservation-method-row">
+                                <div class="base-preservation-row-label">Consistency Student (Consistency backward simulation)</div>
+                                <div class="base-preservation-row-videos">
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">4 NFEs</div>
+                                        <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
+                                            <source src="./assets/videos/ablation_backward/consistency_backward_simulation/causal/sample_step_4/01_a_cooking_tutorial_featuring_a_man_in_a_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">50 NFEs</div>
+                                        <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
+                                            <source src="./assets/videos/ablation_backward/consistency_backward_simulation/causal/sample_step_50/01_a_cooking_tutorial_featuring_a_man_in_a_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="base-preservation-method-row">
+                                <div class="base-preservation-row-label">AnyFlow (Flow map backward simulation)</div>
+                                <div class="base-preservation-row-videos">
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">4 NFEs</div>
+                                        <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
+                                            <source src="./assets/videos/ablation_backward/flowmap_backward_simulation/causal/sample_step_4/01_a_cooking_tutorial_featuring_a_man_in_a_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">50 NFEs</div>
+                                        <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
+                                            <source src="./assets/videos/ablation_backward/flowmap_backward_simulation/causal/sample_step_50/01_a_cooking_tutorial_featuring_a_man_in_a_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <p class="figure-caption figure-caption--center">Placeholder clips—swap paths and labels for real base-model preservation comparisons when available.</p>
+                    <p class="figure-caption">
+                        <b>Figure 5.</b> Base model preservation with the same text prompt.
+                        <b>Left:</b> Teacher reference at 50 NFEs.
+                        <b>Right:</b> Consistency student and AnyFlow student at 4 and 50 NFEs.
+                    </p>
                 </div>
                 <ul class="method-overview-points main-result-anystep-intro">
                     <li>
-                        <span class="method-point-title">Any-step sampling</span>
+                        <span class="method-point-title">Any-step sampling:</span>
                         <strong>AnyFlow</strong> achieves strong few-step quality while maintaining stable improvements as the number of sampling steps increases.
                     </li>
                 </ul>
                 <div class="figure-container figure-container--paradigm main-result-scale-figure">
                     <img src="./assets/figures/teaser_test_scale.png" alt="Test-time scaling of AnyFlow vs. consistency baselines" class="method-figure">
                     <p class="figure-caption figure-caption--center main-result-fig1-caption">
-                        <b>Figure 5.</b> Test-time scaling of AnyFlow.
+                        <b>Figure 6.</b> Quantitative comparison of test-time scaling between the consistency model and AnyFlow.
                     </p>
                 </div>
                 <div class="figure-container figure-container--main-result main-result-figure">
+                    <div class="figure-container main-result-1-3b-comparison">
                     <div class="teaser-video-section">
-                        <p class="teaser-track-title">Bidirectional · Wan 1.3B · same prompt</p>
+                        <p class="teaser-track-title">Bidirectional Video Diffusion Model (1.3B)</p>
                         <div class="sync-group sync-group--autoplay main-result-sync-stack" data-group="main-bidir">
                             <div class="main-result-sync-row">
                                 <div class="main-result-sync-y-label">rCM</div>
                                 <div class="main-result-sync-row-cells">
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <div class="main-result-nfe-chip">4 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
                                             <source src="./assets/videos/teaser/rcm/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <div class="main-result-nfe-chip">16 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
                                             <source src="./assets/videos/teaser/rcm/sample_step_16/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <div class="main-result-nfe-chip">50 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
                                             <source src="./assets/videos/teaser/rcm/sample_step_50/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
                                         </video>
@@ -303,19 +339,19 @@
                                 <div class="main-result-sync-y-label">AnyFlow</div>
                                 <div class="main-result-sync-row-cells">
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <div class="main-result-nfe-chip">4 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
                                             <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <div class="main-result-nfe-chip">16 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
                                             <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_16/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <div class="main-result-nfe-chip">50 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
                                             <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_50/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
                                         </video>
@@ -324,27 +360,27 @@
                             </div>
                         </div>
 
-                        <p class="teaser-track-title">Causal · Wan 1.3B FAR · same prompt</p>
+                        <p class="teaser-track-title">Causal Video Diffusion Model (1.3B)</p>
                         <div class="sync-group sync-group--autoplay main-result-sync-stack" data-group="main-causal">
                             <div class="main-result-sync-row">
                                 <div class="main-result-sync-y-label">Self-Forcing</div>
                                 <div class="main-result-sync-row-cells">
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <div class="main-result-nfe-chip">4 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
-                                            <source src="./assets/videos/teaser/self-forcing/sample_step_4/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                            <source src="./assets/videos/teaser/self-forcing/sample_step_4/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <div class="main-result-nfe-chip">16 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
-                                            <source src="./assets/videos/teaser/self-forcing/sample_step_16/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                            <source src="./assets/videos/teaser/self-forcing/sample_step_16/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <div class="main-result-nfe-chip">50 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
-                                            <source src="./assets/videos/teaser/self-forcing/sample_step_50/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                            <source src="./assets/videos/teaser/self-forcing/sample_step_50/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                 </div>
@@ -353,32 +389,31 @@
                                 <div class="main-result-sync-y-label">AnyFlow-FAR</div>
                                 <div class="main-result-sync-row-cells">
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <div class="main-result-nfe-chip">4 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
-                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_4/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_4/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <div class="main-result-nfe-chip">16 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
-                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_16/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_16/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                     <div class="main-result-sync-cell">
-                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <div class="main-result-nfe-chip">50 NFEs</div>
                                         <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
-                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_50/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_50/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
                                         </video>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <p class="figure-caption">
-                        <b>Figure 5.</b> Test-time scaling of AnyFlow (same as <b>Fig. 1</b> in the paper).
-                        <b>(a)</b> Quantitative comparison (Figure 1 above).
-                        <b>(b)</b> Qualitative comparison: synchronized videos at 4 / 16 / 50 NFEs vs. consistency baselines.
+                    <p class="figure-caption figure-caption--center main-result-1-3b-figure-caption">
+                        <b>Figure 7.</b> Qualitative comparison of test-time scaling between the consistency baselines (rCM and Self-Forcing) and AnyFlow.
                     </p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -391,14 +426,13 @@
                 <div class="nav-subsection">
                     <a href="#causal-14b-t2v" class="nav-link">1.1 T2V Comparison</a>
                     <a href="#causal-14b-i2v" class="nav-link">1.2 I2V Comparison</a>
-                    <a href="#causal-14b-v2v" class="nav-link">1.3 V2V Demonstration</a>
                 </div>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-title">2. Bidirectional Video Diffusion Model (14B)</div>
                 <div class="nav-subsection">
-                    <a href="#bidirectional-14b-comparison" class="nav-link">Comparison</a>
+                    <a href="#bidirectional-14b-comparison" class="nav-link">2.1 T2V Comparison</a>
                 </div>
             </div>
         </nav>
@@ -409,17 +443,16 @@
 
                 <div class="subsection" id="causal-14b-t2v">
                     <h3 class="subsection-title">1.1 T2V Comparison</h3>
-                    <p class="figure-caption" style="margin-top: 0;">Causal 14B text-to-video: every row is one prompt. Four methods at <b>4 NFE</b> each. Autoplay in sync within each row (muted, no controls).</p>
+                    <p class="figure-caption causal-t2v-lead-caption"><strong>AnyFlow-FAR-14B</strong> achieves better dynamic and quality compared to community consistency baselines (Krea-Realtime-14B, LightX2V-CausVid-14B and FastVideo-14B).</p>
                     <div class="causal-t2v-matrix">
                         <div class="causal-t2v-grid causal-t2v-grid--headers">
-                            <div class="causal-t2v-label causal-t2v-label--header">Krea-Realtime-14B <span class="method-nfe-tag">(4 NFE)</span></div>
-                            <div class="causal-t2v-label causal-t2v-label--header">LightX2V-CausVid-14B <span class="method-nfe-tag">(4 NFE)</span></div>
-                            <div class="causal-t2v-label causal-t2v-label--header">FastVideo-14B <span class="method-nfe-tag">(4 NFE)</span></div>
-                            <div class="causal-t2v-label causal-t2v-label--header">AnyFlow-FAR (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">Krea-Realtime-14B <span class="method-nfe-tag">(4 NFEs)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">LightX2V-CausVid-14B <span class="method-nfe-tag">(9 NFEs)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">FastVideo-14B <span class="method-nfe-tag">(8 NFEs)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header causal-t2v-label--ours">AnyFlow-FAR-14B (Ours) <span class="method-nfe-tag">(4 NFEs)</span></div>
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="03_a_golden_retriever_playing_in_a_grassy_b.mp4">Golden retriever · grass</p>
                             <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-03">
                                 <div class="causal-t2v-grid">
                                     <div class="causal-t2v-cell">
@@ -447,7 +480,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4">Eiffel Tower · top-down aerial</p>
                             <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-04">
                                 <div class="causal-t2v-grid">
                                     <div class="causal-t2v-cell">
@@ -475,7 +507,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="05_a_male_sprinter_running_on_a_track_durin.mp4">Sprinter on track</p>
                             <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-05">
                                 <div class="causal-t2v-grid">
                                     <div class="causal-t2v-cell">
@@ -503,7 +534,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="06_CG_game_concept_digital_art,_a_majestic_.mp4">CG game concept · majestic scene</p>
                             <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-06">
                                 <div class="causal-t2v-grid">
                                     <div class="causal-t2v-cell">
@@ -531,7 +561,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="13_A_dynamic_and_action-packed_sequence_set.mp4">Dynamic action-packed gameplay</p>
                             <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-13">
                                 <div class="causal-t2v-grid">
                                     <div class="causal-t2v-cell">
@@ -559,7 +588,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="14_An_intense_and_dynamic_gameplay_sequence.mp4">Intense dynamic gameplay</p>
                             <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-14">
                                 <div class="causal-t2v-grid">
                                     <div class="causal-t2v-cell">
@@ -590,16 +618,15 @@
 
                 <div class="subsection" id="causal-14b-i2v">
                     <h3 class="subsection-title">1.2 I2V Comparison</h3>
-                    <p class="figure-caption" style="margin-top: 0;">Causal 14B image-to-video: same conditioning per row. Three methods at <b>4 NFE</b> each. Autoplay in sync within each row (muted, no controls).</p>
+                    <p class="figure-caption causal-t2v-lead-caption">Within the same model, <strong>AnyFlow-FAR-14B</strong> can support I2V generation as well; it achieves similar quality compared to Wan2.1-I2V-14B (50×2 NFEs).</p>
                     <div class="causal-i2v-matrix">
                         <div class="causal-i2v-grid causal-i2v-grid--headers">
-                            <div class="causal-t2v-label causal-t2v-label--header">Wan2.1-I2V-14B <span class="method-nfe-tag">(4 NFE)</span></div>
-                            <div class="causal-t2v-label causal-t2v-label--header">FastVideo-14B <span class="method-nfe-tag">(4 NFE)</span></div>
-                            <div class="causal-t2v-label causal-t2v-label--header">AnyFlow-FAR (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">Wan2.1-I2V-14B <span class="method-nfe-tag">(50*2 NFEs)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">FastVideo-14B <span class="method-nfe-tag">(8 NFEs)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header causal-t2v-label--ours">AnyFlow-FAR-14B (Ours) <span class="method-nfe-tag">(4 NFEs)</span></div>
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="a bald eagle flying over a tree filled forest-3.mp4">Bald eagle · forest</p>
                             <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-eagle">
                                 <div class="causal-i2v-grid">
                                     <div class="causal-i2v-cell">
@@ -622,7 +649,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="a beautiful woman in a blue sari posing in front of a wall-0.mp4">Woman in blue sari · wall</p>
                             <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-sari">
                                 <div class="causal-i2v-grid">
                                     <div class="causal-i2v-cell">
@@ -645,7 +671,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="a brown and white cow eating hay-0.mp4">Cow eating hay</p>
                             <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-cow">
                                 <div class="causal-i2v-grid">
                                     <div class="causal-i2v-cell">
@@ -668,7 +693,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="a close-up view of the flames of a fireplace-0.mp4">Fireplace flames · close-up</p>
                             <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-fire">
                                 <div class="causal-i2v-grid">
                                     <div class="causal-i2v-cell">
@@ -691,7 +715,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="an indian police officer talking to an old woman-0.mp4">Police officer · elderly woman</p>
                             <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-police">
                                 <div class="causal-i2v-grid">
                                     <div class="causal-i2v-cell">
@@ -714,7 +737,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="an older man jogging by the water-0.mp4">Older man jogging · waterfront</p>
                             <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-jog">
                                 <div class="causal-i2v-grid">
                                     <div class="causal-i2v-cell">
@@ -737,41 +759,20 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="subsection" id="causal-14b-v2v">
-                    <h3 class="subsection-title">1.3 V2V Demonstration</h3>
-                    <p class="figure-caption" style="margin-top: 0;">Placeholder — replace with video-to-video demonstration clips.</p>
-                    <div class="video-grid">
-                        <div class="video-container">
-                            <div class="video-placeholder" role="img" aria-label="Video placeholder">Video placeholder</div>
-                            <div class="video-label">Input / condition</div>
-                        </div>
-                        <div class="video-container">
-                            <div class="video-placeholder" role="img" aria-label="Video placeholder">Video placeholder</div>
-                            <div class="video-label">Baseline <span class="method-nfe-tag">(4 NFE)</span></div>
-                        </div>
-                        <div class="video-container">
-                            <div class="video-placeholder" role="img" aria-label="Video placeholder">Video placeholder</div>
-                            <div class="video-label">AnyFlow (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="downstream-major" id="bidirectional-14b">
                 <h2>2. Bidirectional Video Diffusion Model (14B)</h2>
 
                 <div class="subsection" id="bidirectional-14b-comparison">
-                    <h3 class="subsection-title">Comparison</h3>
-                    <p class="figure-caption" style="margin-top: 0;">Bidirectional 14B text-to-video: each row is one prompt. rCM vs. AnyFlow at <b>4 NFE</b> each. Autoplay in sync within each row (muted, no controls).</p>
+                    <h3 class="subsection-title">2.1 T2V Comparison</h3>
                     <div class="bidir-t2v-matrix">
                         <div class="bidir-t2v-grid bidir-t2v-grid--headers">
-                            <div class="causal-t2v-label causal-t2v-label--header">rCM-Wan2.1-T2V-14B <span class="method-nfe-tag">(4 NFE)</span></div>
-                            <div class="causal-t2v-label causal-t2v-label--header">AnyFlow-Wan2.1-T2V-14B (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">rCM-Wan2.1-T2V-14B <span class="method-nfe-tag">(4 NFEs)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header causal-t2v-label--ours">AnyFlow-Wan2.1-T2V-14B (Ours) <span class="method-nfe-tag">(4 NFEs)</span></div>
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="00_a_vibrant_green_Mustang_GT_parked_in_a_p.mp4">Green Mustang · parking scene</p>
                             <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-00">
                                 <div class="bidir-t2v-grid">
                                     <div class="bidir-t2v-cell">
@@ -789,7 +790,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="02_a_man_in_a_suit_and_tie,_standing_agains.mp4">Man in suit · standing</p>
                             <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-02">
                                 <div class="bidir-t2v-grid">
                                     <div class="bidir-t2v-cell">
@@ -807,7 +807,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="05_a_male_sprinter_running_on_a_track_durin.mp4">Male sprinter · track</p>
                             <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-05">
                                 <div class="bidir-t2v-grid">
                                     <div class="bidir-t2v-cell">
@@ -825,7 +824,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="06_CG_game_concept_digital_art,_a_majestic_.mp4">CG game concept · majestic</p>
                             <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-06">
                                 <div class="bidir-t2v-grid">
                                     <div class="bidir-t2v-cell">
@@ -843,7 +841,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="07_A_person_is_canoeing_or_kayaking_on_a_se.mp4">Canoeing / kayaking</p>
                             <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-07">
                                 <div class="bidir-t2v-grid">
                                     <div class="bidir-t2v-cell">
@@ -861,7 +858,6 @@
                         </div>
 
                         <div class="causal-t2v-row-block">
-                            <p class="causal-t2v-row-heading" title="08_A_jeep_navigating_through_a_virtual_envi.mp4">Jeep · virtual environment</p>
                             <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-08">
                                 <div class="bidir-t2v-grid">
                                     <div class="bidir-t2v-cell">
@@ -887,14 +883,10 @@
             <p>If you find our work useful, please consider citing:</p>
             <div class="bibtex-box">
                 <button class="copy-btn" onclick="copyBibtex()">📋 Copy</button>
-                <pre><code>@misc{jiang2026olafworldorientinglatentactions,
-      title={Olaf-World: Orienting Latent Actions for Video World Modeling}, 
-      author={Yuxin Jiang and Yuchao Gu and Ivor W. Tsang and Mike Zheng Shou},
+                <pre><code>@article{gu26anyflow,
+      title={AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation},
+      author={Yuchao Gu and Guian Fang and Yuxin Jiang and Weijia Mao and Song Han and Han Cai and Mike Zheng Shou},
       year={2026},
-      eprint={2602.10104},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2602.10104}, 
 }</code></pre>
             </div>
         </section>

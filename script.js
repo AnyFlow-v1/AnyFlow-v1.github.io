@@ -235,14 +235,10 @@ function initTeaserAutoplaySync() {
 }
 
 function copyBibtex() {
-    const bibtexText = `@misc{jiang2026olafworldorientinglatentactions,
-      title={Olaf-World: Orienting Latent Actions for Video World Modeling}, 
-      author={Yuxin Jiang and Yuchao Gu and Ivor W. Tsang and Mike Zheng Shou},
+    const bibtexText = `@article{gu26anyflow,
+      title={AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation},
+      author={Yuchao Gu and Guian Fang and Yuxin Jiang and Weijia Mao and Song Han and Han Cai and Mike Zheng Shou},
       year={2026},
-      eprint={2602.10104},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2602.10104}, 
 }`;
 
     navigator.clipboard.writeText(bibtexText).then(() => {
