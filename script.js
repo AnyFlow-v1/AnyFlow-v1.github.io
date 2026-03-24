@@ -249,7 +249,7 @@ function copyBibtex() {
 
         setTimeout(() => {
             btn.textContent = originalText;
-            btn.style.background = '#76b900';
+            btn.style.background = '#4a90e2';
         }, 2000);
     }).catch(() => {
         alert('Failed to copy BibTeX. Please copy manually.');
