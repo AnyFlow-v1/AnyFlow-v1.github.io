@@ -660,6 +660,8 @@ h1 {
 }
 
 /* Base model preservation: teacher (left) + two student rows (consistency / flow map) */
+/* Chrome: grid/flex items default min-width:auto; video intrinsic width can blow up columns.
+   Safari often shrinks more aggressively — set min-width:0 through the chain for parity. */
 .base-preservation-comparison {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.85fr);
@@ -668,6 +670,10 @@ h1 {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+}
+
+.base-preservation-comparison > * {
+    min-width: 0;
 }
 
 .base-preservation-teacher {
@@ -686,6 +692,7 @@ h1 {
 .base-preservation-comparison .teaser-sync-video {
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     height: auto;
     border-radius: 4px;
     vertical-align: bottom;
@@ -704,6 +711,12 @@ h1 {
     grid-template-columns: minmax(120px, 220px) minmax(0, 1fr);
     gap: clamp(14px, 1.8vw, 20px);
     align-items: start;
+    min-width: 0;
+    width: 100%;
+}
+
+.base-preservation-comparison .main-result-sync-cell {
+    min-width: 0;
 }
 
 .base-preservation-row-label {
