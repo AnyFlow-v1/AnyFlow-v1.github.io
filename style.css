@@ -665,10 +665,14 @@ h1 {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.85fr);
     gap: clamp(18px, 2.5vw, 32px);
     align-items: start;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .base-preservation-teacher {
     min-width: 0;
+    max-width: 100%;
 }
 
 .base-preservation-col-title {
@@ -681,8 +685,11 @@ h1 {
 
 .base-preservation-comparison .teaser-sync-video {
     width: 100%;
+    max-width: 100%;
+    height: auto;
     border-radius: 4px;
     vertical-align: bottom;
+    box-sizing: border-box;
 }
 
 .base-preservation-student-rows {
