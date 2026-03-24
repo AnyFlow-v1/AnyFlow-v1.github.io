@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Resolve ./assets/... relative to this HTML file (fixes preview servers & subfolders) -->
+    <base href="./">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation</title>
+    <meta name="description" content="AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation">
+    <meta name="keywords" content="video generation">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation">
+    <meta property="og:description" content="AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation">
+    <meta name="twitter:description" content="AnyFlow: Any-Step Video Diffusion Model with On-Policy Flow Map Distillation">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="https://developer-blogs.nvidia.com/wp-content/themes/nvidia/dist/images/favicon_300a1064.ico" type="image/x-icon">
+</head>
+<body>
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+            <div class="navbar-menu">
+                <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+                    <a class="navbar-item" href="https://yuxinn-j.github.io/">
+                    <span class="icon">
+                            <i class="fas fa-home"></i>
+                    </span>
+                    </a>
+
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <button class="navbar-link" type="button" aria-haspopup="true" aria-expanded="false">
+                            Related Research <span class="dropdown-caret" aria-hidden="true">▾</span>
+                        </button>
+                        <div class="navbar-dropdown">
+                            <div class="navbar-nested">
+                                <button type="button" class="navbar-nested-trigger" aria-expanded="false" aria-haspopup="true">
+                                    Video World Model
+                                    <span class="nested-caret" aria-hidden="true">▸</span>
+                                </button>
+                                <div class="navbar-nested-menu" role="menu">
+                                    <a class="navbar-item" role="menuitem" href="https://adaptable-world-model.github.io/">AdaWorld</a>
+                                </div>
+                            </div>
+                            <div class="navbar-nested">
+                                <button type="button" class="navbar-nested-trigger" aria-expanded="false" aria-haspopup="true">
+                                    Efficient Video Generation
+                                    <span class="nested-caret" aria-hidden="true">▸</span>
+                                </button>
+                                <div class="navbar-nested-menu" role="menu">
+                                    <a class="navbar-item" role="menuitem" href="https://csu-jpg.github.io/MIND.github.io/">MIND</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+        <div class="container">
+        <header>
+            <h1>AnyFlow: Any-Step Video Diffusion Model with<br>On-Policy Flow Map Distillation</h1>
+            <p class="authors">
+                <span class="author"><a href="https://ycgu.site/">Yuchao Gu</a><sup>1,2</sup>,</span>
+                <span class="author"><span class="author-text">Guian Fang</span><sup>2</sup>,</span>
+                <span class="author"><a href="https://yuxinn-j.github.io/">Yuxin Jiang</a><sup>2</sup>,</span>
+                <span class="author"><span class="author-text">Weijia Mao</span><sup>2</sup>,</span>
+                <span class="author"><a href="https://hanlab.mit.edu/songhan">Song Han</a><sup>1,3</sup>,</span>
+                <span class="author"><a href="https://han-cai.github.io/">Han Cai</a><sup>1,*</sup>,</span>
+                <span class="author"><a href="https://sites.google.com/view/showlab/">Mike Zheng Shou</a><sup>2,*</sup></span>
+            </p>
+            <p class="affiliations">
+                <sup>1</sup>NVIDIA &nbsp;&nbsp;&nbsp;
+                <sup>2</sup>Show Lab, National University of Singapore &nbsp;&nbsp;&nbsp;
+                <sup>3</sup>MIT
+            </p>
+            <p class="author-footnote"><sup>*</sup>Corresponding authors.</p>
+            <p class="conference">Arxiv 2026</p>
+            
+            <div class="links">
+                <a href="https://arxiv.org/abs/2602.10104" class="button button-with-icon" aria-label="Paper on arXiv">
+                    <i class="fas fa-file-alt button-icon-fa" aria-hidden="true"></i>
+                    arXiv
+                </a>
+                <a href="https://github.com/showlab/Olaf-World" class="button button-with-icon" aria-label="Code on GitHub">
+                    <i class="fab fa-github button-icon-fa" aria-hidden="true"></i>
+                    Code
+                </a>
+                <a href="https://huggingface.co/showlab" class="button button-with-icon" aria-label="Model on Hugging Face">
+                    <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="" class="button-icon-img" width="20" height="20">
+                    Model
+                </a>
+            </div>
+        </header>
+
+        <!-- Teaser video: uncomment this block when the hero clip is ready.
+        <section class="teaser">
+            <div class="teaser-container">
+                <video class="teaser-gif" controls loop muted playsinline autoplay preload="metadata">
+                    <source src="https://github.com/user-attachments/assets/76338aad-f43c-41ca-a3e4-0467f63b21e9" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <p class="figure-caption" style="margin-top:14px;text-align:center;">
+                    <b>Teaser video.</b>
+                </p>
+            </div>
+            <p id="local-file-warning" class="local-file-warning" hidden>
+                If images or videos are blank, avoid opening this HTML via <code>file://</code>. From the <code>project_page</code> folder run
+                <code>python3 -m http.server 8080</code> and open <code>http://localhost:8080/</code> in your browser.
+            </p>
+        </section>
+        -->
+
+        <!-- Abstract Section -->
+        <section class="abstract">
+            <h2>Abstract</h2>
+            <p>
+                Few-step video generation has been significantly advanced by consistency models. However, their performance
+                often degrades in any-step video diffusion models due to the fixed-point formulation. To address this limitation,
+                we present <strong>AnyFlow</strong>, the first any-step video diffusion distillation framework built on flow maps. Instead of
+                learning only the mapping z<sub>t</sub> → z<sub>0</sub>, AnyFlow learns transitions z<sub>t</sub> → z<sub>r</sub> over arbitrary time intervals, enabling
+                a single model to adapt to different inference budgets. Concretely, we design an improved forward flow
+                map training recipe that fine-tunes pretrained video diffusion models into flow map models. We further
+                introduce <strong>Flow Map Backward Simulation</strong> to enable on-policy distillation for flow map models, where
+                reverse divergence is optimized on model rollouts to reduce discretization error and exposure bias. By
+                jointly optimizing forward flow map learning and reverse-divergence supervision, AnyFlow achieves strong
+                few-step quality while maintaining stable improvements as the number of sampling steps increases. Extensive
+                experiments across both bidirectional and causal architectures, at scales ranging from 1.3B to 14B, on
+                text-to-video and image-to-video tasks demonstrate that AnyFlow outperforms consistency-based baselines,
+                while preserving high fidelity and flexible sampling under varying step budgets. At 4 NFEs, AnyFlow reaches
+                84.18 on the 14B bidirectional model setting, outperforming rCM-14B (83.73), and in the 14B causal model
+                setting, AnyFlow-FAR surpasses Krea-Realtime-14B (84.11 vs. 83.25).
+            </p>
+        </section>
+
+        <!-- Overview Section -->
+        <section class="overview">
+            <h2>Method Overview</h2>
+
+            <div class="method-subsection">
+                <h3 class="method-title-one-line">Consistency Distillation vs. Flow Map Distillation</h3>
+                <ul class="method-overview-points">
+                    <li>
+                        <span class="method-point-title">Consistency distillation</span> learns a direct mapping from a noisy state
+                        <b>z<sub>t</sub></b> to the data endpoint <b>z<sub>0</sub></b> along the probability-flow ODE (PF-ODE) during forward training (e.g., Consistency Training or ODE Initialization).
+                        During on-policy distillation (i.e, DMD), the consistency backward simulation requires <b>re-injecting noise</b> to reach intermediate states, causing error accumulation in multi-step sampling.
+                    </li>
+                    <li>
+                        <span class="method-point-title">Flow map distillation</span>
+                        learns a <b>two-time transition</b> operator
+                        <b>z<sub>t</sub> → z<sub>r</sub></b> for arbitrary times <i>t</i> and <i>r</i> on the PF-ODE.
+                        It generalizes endpoint consistency (recovering the consistency map when <i>r</i> = 0) while naturally supporting
+                        <b>variable step sizes</b> and flexible inference budgets with a single student.
+                        <strong>AnyFlow</strong> follows this paradigm and introduces <strong>Improved Forward Flow Map Training</strong> with
+                        <strong>Flow Map Backward Simulation</strong> for on-policy distillation.
+                    </li>
+                </ul>
+                <div class="figure-container figure-container--paradigm">
+                    <img src="./assets/figures/paradigm_comparison.png" alt="Comparison of consistency distillation and flow map distillation paradigms" class="method-figure">
+                    <p class="figure-caption figure-caption--center">
+                        <b>Figure 2.</b> Comparison of distillation paradigms.
+                    </p>
+                </div>
+            </div>
+
+            <div class="method-subsection">
+                <h3>Consistency Backward Simulation vs. Flow Map Backward Simulation</h3>
+                <ul class="method-overview-points">
+                    <li>
+                        <span class="method-point-title">Consistency backward simulation</span>
+                        relies on <b>multi-step</b> sampling from <b>z<sub>t</sub></b> toward an intermediate <b>z<sub>r</sub></b>, while training still emphasizes the denoising hop <b>z<sub>r</sub></b> → <b>z<sub>0</sub></b>. Simulating <b>long</b> time spans is <b>computationally expensive</b>, and <b>errors accumulate</b> across steps rather than disappearing as the budget grows.
+                    </li>
+                    <li>
+                        <span class="method-point-title">Flow map backward simulation</span>
+                        exploits the <b>composition</b> property of flow maps: each rollout is split into segments such as <b>T</b> → <i>t</i>, <i>t</i> → <i>r</i>, and <i>r</i> → 0, so supervision stays aligned with <b>z<sub>t</sub></b> → <b>z<sub>r</sub></b> transitions. Intermediate states can be trained with a <b>flexible</b> effective step size <i>t</i> − <i>r</i>, matching different inference budgets.
+                    </li>
+                </ul>
+                <div class="figure-container figure-container--paradigm">
+                    <img src="./assets/figures/comp_simulation.png" alt="Illustration comparing consistency backward simulation and flow map backward simulation" class="method-figure">
+                    <p class="figure-caption">
+                        <b>Figure 3.</b> Backward simulation for on-policy distillation.
+                        (a) Consistency backward simulation. (b) Flow map backward simulation (ours).
+                    </p>
+                </div>
+            </div>
+
+            <div class="method-subsection">
+                <h3 class="method-title-one-line">AnyFlow Training Pipeline</h3>
+                <p>
+                    <strong>AnyFlow</strong> follows the usual <b>two-stage</b> recipe in video diffusion distillation: <b>forward training</b> for a stable initialization,
+                    then <b>on-policy distillation</b> to narrow the train–test gap.
+                </p>
+                <ul class="method-overview-points">
+                    <li>
+                        <span class="method-point-title">Stage 1.</span>
+                        We apply <b>improved forward flow map training</b> on synthetic (teacher-generated) data so the student picks up the extra time conditioning required for flow maps, turning a pretrained video diffusion model into a flow map student.
+                    </li>
+                    <li>
+                        <span class="method-point-title">Stage 2.</span>
+                        We <b>jointly</b> optimize the same forward flow map objective with <b>distribution matching distillation (DMD)</b> on the student’s own rollouts with <strong>Flow Map Backward Simulation</strong>. This targets to solve the <b>discretization error</b> (in few-step sampling) and <b>exposure bias</b> (in causal video diffusion), while keeping one student across flexible inference budgets.
+                    </li>
+                    <li>
+                        <span class="method-point-title">Sampling.</span>
+                        At inference, we adopt a <b>vanilla Euler</b> ODE solver for generation.
+                    </li>
+                </ul>
+                <div class="figure-container figure-container--paradigm">
+                    <img src="./assets/figures/pipeline.png" alt="Overview of the AnyFlow two-stage pipeline: forward flow map training and on-policy flow map distillation" class="method-figure">
+                    <p class="figure-caption  figure-caption--center">
+                        <b>Figure 4.</b> Overview of the AnyFlow pipeline.
+                    </p>
+                </div>
+            </div>
+
+            <div class="method-subsection">
+                <h3 class="method-title-one-line">Main Result</h3>
+                <ul class="method-overview-points base-model-preservation-intro">
+                    <li>
+                        <span class="method-point-title">Base model preservation</span>
+                        <strong>AnyFlow</strong> <b>better preserves</b> knowledge from the pretrained flow-matching teacher—visual and motion structure—relative to distillation that forces every step toward a single data endpoint.
+                    </li>
+                </ul>
+                <div class="figure-container figure-container--paradigm base-model-preservation-examples">
+                    <p class="teaser-track-title base-model-preservation-examples-title">Examples (placeholders)</p>
+                    <div class="base-model-placeholder-grid">
+                        <div class="base-model-placeholder-cell">
+                            <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
+                                <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                            </video>
+                            <p class="video-label">Placeholder example 1</p>
+                        </div>
+                        <div class="base-model-placeholder-cell">
+                            <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
+                                <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_4/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                            </video>
+                            <p class="video-label">Placeholder example 2</p>
+                        </div>
+                        <div class="base-model-placeholder-cell">
+                            <video class="teaser-sync-video" muted loop playsinline autoplay preload="metadata" disablepictureinpicture>
+                                <source src="./assets/videos/teaser/rcm/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                            </video>
+                            <p class="video-label">Placeholder example 3</p>
+                        </div>
+                    </div>
+                    <p class="figure-caption figure-caption--center">Placeholder clips—swap paths and labels for real base-model preservation comparisons when available.</p>
+                </div>
+                <ul class="method-overview-points main-result-anystep-intro">
+                    <li>
+                        <span class="method-point-title">Any-step sampling</span>
+                        <strong>AnyFlow</strong> achieves strong few-step quality while maintaining stable improvements as the number of sampling steps increases.
+                    </li>
+                </ul>
+                <div class="figure-container figure-container--paradigm main-result-scale-figure">
+                    <img src="./assets/figures/teaser_test_scale.png" alt="Test-time scaling of AnyFlow vs. consistency baselines" class="method-figure">
+                    <p class="figure-caption figure-caption--center main-result-fig1-caption">
+                        <b>Figure 5.</b> Test-time scaling of AnyFlow.
+                    </p>
+                </div>
+                <div class="figure-container figure-container--main-result main-result-figure">
+                    <div class="teaser-video-section">
+                        <p class="teaser-track-title">Bidirectional · Wan 1.3B · same prompt</p>
+                        <div class="sync-group sync-group--autoplay main-result-sync-stack" data-group="main-bidir">
+                            <div class="main-result-sync-row">
+                                <div class="main-result-sync-y-label">rCM</div>
+                                <div class="main-result-sync-row-cells">
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/rcm/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/rcm/sample_step_16/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/rcm/sample_step_50/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="main-result-sync-row">
+                                <div class="main-result-sync-y-label">AnyFlow</div>
+                                <div class="main-result-sync-row-cells">
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_4/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_16/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/anyflow-wan-1.3b/sample_step_50/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="teaser-track-title">Causal · Wan 1.3B FAR · same prompt</p>
+                        <div class="sync-group sync-group--autoplay main-result-sync-stack" data-group="main-causal">
+                            <div class="main-result-sync-row">
+                                <div class="main-result-sync-y-label">Self-Forcing</div>
+                                <div class="main-result-sync-row-cells">
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/self-forcing/sample_step_4/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/self-forcing/sample_step_16/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/self-forcing/sample_step_50/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="main-result-sync-row">
+                                <div class="main-result-sync-y-label">AnyFlow-FAR</div>
+                                <div class="main-result-sync-row-cells">
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">4 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_4/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">16 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_16/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="main-result-sync-cell">
+                                        <div class="main-result-nfe-chip">50 NFE</div>
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/teaser/anyflow-farwan-1.3b/sample_step_50/10_a_large_rhino_grazing_in_the_grass_near_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="figure-caption">
+                        <b>Figure 5.</b> Test-time scaling of AnyFlow (same as <b>Fig. 1</b> in the paper).
+                        <b>(a)</b> Quantitative comparison (Figure 1 above).
+                        <b>(b)</b> Qualitative comparison: synchronized videos at 4 / 16 / 50 NFEs vs. consistency baselines.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Bar -->
+        <nav class="nav-bar">
+            <h2 class="nav-bar-title">Large-Scale Any-Step Video Diffusion Model</h2>
+            <div class="nav-section">
+                <div class="nav-section-title">1. Causal Video Diffusion Model (14B)</div>
+                <div class="nav-subsection">
+                    <a href="#causal-14b-t2v" class="nav-link">1.1 T2V Comparison</a>
+                    <a href="#causal-14b-i2v" class="nav-link">1.2 I2V Comparison</a>
+                    <a href="#causal-14b-v2v" class="nav-link">1.3 V2V Demonstration</a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">2. Bidirectional Video Diffusion Model (14B)</div>
+                <div class="nav-subsection">
+                    <a href="#bidirectional-14b-comparison" class="nav-link">Comparison</a>
+                </div>
+            </div>
+        </nav>
+
+        <section id="large-scale-results">
+            <div class="downstream-major" id="causal-14b">
+                <h2>1. Causal Video Diffusion Model (14B)</h2>
+
+                <div class="subsection" id="causal-14b-t2v">
+                    <h3 class="subsection-title">1.1 T2V Comparison</h3>
+                    <p class="figure-caption" style="margin-top: 0;">Causal 14B text-to-video: every row is one prompt. Four methods at <b>4 NFE</b> each. Autoplay in sync within each row (muted, no controls).</p>
+                    <div class="causal-t2v-matrix">
+                        <div class="causal-t2v-grid causal-t2v-grid--headers">
+                            <div class="causal-t2v-label causal-t2v-label--header">Krea-Realtime-14B <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">LightX2V-CausVid-14B <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">FastVideo-14B <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">AnyFlow-FAR (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="03_a_golden_retriever_playing_in_a_grassy_b.mp4">Golden retriever · grass</p>
+                            <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-03">
+                                <div class="causal-t2v-grid">
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/Krea-Realtime-Wan2.1-14B/03_a_golden_retriever_playing_in_a_grassy_b.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/LightX2V-Wan2.1-14B-CausVid/03_a_golden_retriever_playing_in_a_grassy_b.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/FastVideo-Wan2.2-A14B-Preview/03_a_golden_retriever_playing_in_a_grassy_b.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/AnyFlow-FAR-Wan2.1-14B/03_a_golden_retriever_playing_in_a_grassy_b.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4">Eiffel Tower · top-down aerial</p>
+                            <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-04">
+                                <div class="causal-t2v-grid">
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/Krea-Realtime-Wan2.1-14B/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/LightX2V-Wan2.1-14B-CausVid/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/FastVideo-Wan2.2-A14B-Preview/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/AnyFlow-FAR-Wan2.1-14B/04_a_top-down_aerial_view_of_the_Eiffel_Tow.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="05_a_male_sprinter_running_on_a_track_durin.mp4">Sprinter on track</p>
+                            <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-05">
+                                <div class="causal-t2v-grid">
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/Krea-Realtime-Wan2.1-14B/05_a_male_sprinter_running_on_a_track_durin.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/LightX2V-Wan2.1-14B-CausVid/05_a_male_sprinter_running_on_a_track_durin.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/FastVideo-Wan2.2-A14B-Preview/05_a_male_sprinter_running_on_a_track_durin.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/AnyFlow-FAR-Wan2.1-14B/05_a_male_sprinter_running_on_a_track_durin.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="06_CG_game_concept_digital_art,_a_majestic_.mp4">CG game concept · majestic scene</p>
+                            <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-06">
+                                <div class="causal-t2v-grid">
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/Krea-Realtime-Wan2.1-14B/06_CG_game_concept_digital_art,_a_majestic_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/LightX2V-Wan2.1-14B-CausVid/06_CG_game_concept_digital_art,_a_majestic_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/FastVideo-Wan2.2-A14B-Preview/06_CG_game_concept_digital_art,_a_majestic_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/AnyFlow-FAR-Wan2.1-14B/06_CG_game_concept_digital_art,_a_majestic_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="13_A_dynamic_and_action-packed_sequence_set.mp4">Dynamic action-packed gameplay</p>
+                            <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-13">
+                                <div class="causal-t2v-grid">
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/Krea-Realtime-Wan2.1-14B/13_A_dynamic_and_action-packed_sequence_set.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/LightX2V-Wan2.1-14B-CausVid/13_A_dynamic_and_action-packed_sequence_set.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/FastVideo-Wan2.2-A14B-Preview/13_A_dynamic_and_action-packed_sequence_set.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/AnyFlow-FAR-Wan2.1-14B/13_A_dynamic_and_action-packed_sequence_set.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="14_An_intense_and_dynamic_gameplay_sequence.mp4">Intense dynamic gameplay</p>
+                            <div class="sync-group sync-group--autoplay causal-t2v-sync" data-group="causal-t2v-14">
+                                <div class="causal-t2v-grid">
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/Krea-Realtime-Wan2.1-14B/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/LightX2V-Wan2.1-14B-CausVid/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/FastVideo-Wan2.2-A14B-Preview/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/causal_model/AnyFlow-FAR-Wan2.1-14B/14_An_intense_and_dynamic_gameplay_sequence.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection" id="causal-14b-i2v">
+                    <h3 class="subsection-title">1.2 I2V Comparison</h3>
+                    <p class="figure-caption" style="margin-top: 0;">Causal 14B image-to-video: same conditioning per row. Three methods at <b>4 NFE</b> each. Autoplay in sync within each row (muted, no controls).</p>
+                    <div class="causal-i2v-matrix">
+                        <div class="causal-i2v-grid causal-i2v-grid--headers">
+                            <div class="causal-t2v-label causal-t2v-label--header">Wan2.1-I2V-14B <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">FastVideo-14B <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">AnyFlow-FAR (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="a bald eagle flying over a tree filled forest-3.mp4">Bald eagle · forest</p>
+                            <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-eagle">
+                                <div class="causal-i2v-grid">
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/Wan2.1-I2V-14B/a bald eagle flying over a tree filled forest-3.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/FastVideo-Wan2.2-A14B-Preview/a bald eagle flying over a tree filled forest-3.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/AnyFlow-FAR-Wan2.1-14B/a bald eagle flying over a tree filled forest-3.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="a beautiful woman in a blue sari posing in front of a wall-0.mp4">Woman in blue sari · wall</p>
+                            <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-sari">
+                                <div class="causal-i2v-grid">
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/Wan2.1-I2V-14B/a beautiful woman in a blue sari posing in front of a wall-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/FastVideo-Wan2.2-A14B-Preview/a beautiful woman in a blue sari posing in front of a wall-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/AnyFlow-FAR-Wan2.1-14B/a beautiful woman in a blue sari posing in front of a wall-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="a brown and white cow eating hay-0.mp4">Cow eating hay</p>
+                            <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-cow">
+                                <div class="causal-i2v-grid">
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/Wan2.1-I2V-14B/a brown and white cow eating hay-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/FastVideo-Wan2.2-A14B-Preview/a brown and white cow eating hay-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/AnyFlow-FAR-Wan2.1-14B/a brown and white cow eating hay-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="a close-up view of the flames of a fireplace-0.mp4">Fireplace flames · close-up</p>
+                            <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-fire">
+                                <div class="causal-i2v-grid">
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/Wan2.1-I2V-14B/a close-up view of the flames of a fireplace-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/FastVideo-Wan2.2-A14B-Preview/a close-up view of the flames of a fireplace-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/AnyFlow-FAR-Wan2.1-14B/a close-up view of the flames of a fireplace-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="an indian police officer talking to an old woman-0.mp4">Police officer · elderly woman</p>
+                            <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-police">
+                                <div class="causal-i2v-grid">
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/Wan2.1-I2V-14B/an indian police officer talking to an old woman-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/FastVideo-Wan2.2-A14B-Preview/an indian police officer talking to an old woman-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/AnyFlow-FAR-Wan2.1-14B/an indian police officer talking to an old woman-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="an older man jogging by the water-0.mp4">Older man jogging · waterfront</p>
+                            <div class="sync-group sync-group--autoplay causal-i2v-sync" data-group="causal-i2v-jog">
+                                <div class="causal-i2v-grid">
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/Wan2.1-I2V-14B/an older man jogging by the water-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/FastVideo-Wan2.2-A14B-Preview/an older man jogging by the water-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="causal-i2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison_i2v/AnyFlow-FAR-Wan2.1-14B/an older man jogging by the water-0.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection" id="causal-14b-v2v">
+                    <h3 class="subsection-title">1.3 V2V Demonstration</h3>
+                    <p class="figure-caption" style="margin-top: 0;">Placeholder — replace with video-to-video demonstration clips.</p>
+                    <div class="video-grid">
+                        <div class="video-container">
+                            <div class="video-placeholder" role="img" aria-label="Video placeholder">Video placeholder</div>
+                            <div class="video-label">Input / condition</div>
+                        </div>
+                        <div class="video-container">
+                            <div class="video-placeholder" role="img" aria-label="Video placeholder">Video placeholder</div>
+                            <div class="video-label">Baseline <span class="method-nfe-tag">(4 NFE)</span></div>
+                        </div>
+                        <div class="video-container">
+                            <div class="video-placeholder" role="img" aria-label="Video placeholder">Video placeholder</div>
+                            <div class="video-label">AnyFlow (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="downstream-major" id="bidirectional-14b">
+                <h2>2. Bidirectional Video Diffusion Model (14B)</h2>
+
+                <div class="subsection" id="bidirectional-14b-comparison">
+                    <h3 class="subsection-title">Comparison</h3>
+                    <p class="figure-caption" style="margin-top: 0;">Bidirectional 14B text-to-video: each row is one prompt. rCM vs. AnyFlow at <b>4 NFE</b> each. Autoplay in sync within each row (muted, no controls).</p>
+                    <div class="bidir-t2v-matrix">
+                        <div class="bidir-t2v-grid bidir-t2v-grid--headers">
+                            <div class="causal-t2v-label causal-t2v-label--header">rCM-Wan2.1-T2V-14B <span class="method-nfe-tag">(4 NFE)</span></div>
+                            <div class="causal-t2v-label causal-t2v-label--header">AnyFlow-Wan2.1-T2V-14B (ours) <span class="method-nfe-tag">(4 NFE)</span></div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="00_a_vibrant_green_Mustang_GT_parked_in_a_p.mp4">Green Mustang · parking scene</p>
+                            <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-00">
+                                <div class="bidir-t2v-grid">
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/rCM-Wan2.1-T2V-14B/00_a_vibrant_green_Mustang_GT_parked_in_a_p.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/AnyFlow-Wan2.1-T2V-14B/00_a_vibrant_green_Mustang_GT_parked_in_a_p.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="02_a_man_in_a_suit_and_tie,_standing_agains.mp4">Man in suit · standing</p>
+                            <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-02">
+                                <div class="bidir-t2v-grid">
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/rCM-Wan2.1-T2V-14B/02_a_man_in_a_suit_and_tie,_standing_agains.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/AnyFlow-Wan2.1-T2V-14B/02_a_man_in_a_suit_and_tie,_standing_agains.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="05_a_male_sprinter_running_on_a_track_durin.mp4">Male sprinter · track</p>
+                            <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-05">
+                                <div class="bidir-t2v-grid">
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/rCM-Wan2.1-T2V-14B/05_a_male_sprinter_running_on_a_track_durin.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/AnyFlow-Wan2.1-T2V-14B/05_a_male_sprinter_running_on_a_track_durin.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="06_CG_game_concept_digital_art,_a_majestic_.mp4">CG game concept · majestic</p>
+                            <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-06">
+                                <div class="bidir-t2v-grid">
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/rCM-Wan2.1-T2V-14B/06_CG_game_concept_digital_art,_a_majestic_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/AnyFlow-Wan2.1-T2V-14B/06_CG_game_concept_digital_art,_a_majestic_.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="07_A_person_is_canoeing_or_kayaking_on_a_se.mp4">Canoeing / kayaking</p>
+                            <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-07">
+                                <div class="bidir-t2v-grid">
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/rCM-Wan2.1-T2V-14B/07_A_person_is_canoeing_or_kayaking_on_a_se.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/AnyFlow-Wan2.1-T2V-14B/07_A_person_is_canoeing_or_kayaking_on_a_se.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="causal-t2v-row-block">
+                            <p class="causal-t2v-row-heading" title="08_A_jeep_navigating_through_a_virtual_envi.mp4">Jeep · virtual environment</p>
+                            <div class="sync-group sync-group--autoplay bidir-t2v-sync" data-group="bidir-t2v-08">
+                                <div class="bidir-t2v-grid">
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/rCM-Wan2.1-T2V-14B/08_A_jeep_navigating_through_a_virtual_envi.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                    <div class="bidir-t2v-cell">
+                                        <video class="teaser-sync-video" muted loop playsinline preload="auto" disablepictureinpicture>
+                                            <source src="./assets/videos/quality_comparison/bidirectional_model/AnyFlow-Wan2.1-T2V-14B/08_A_jeep_navigating_through_a_virtual_envi.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bibtex" id="bibtex">
+            <h2>BibTeX</h2>
+            <p>If you find our work useful, please consider citing:</p>
+            <div class="bibtex-box">
+                <button class="copy-btn" onclick="copyBibtex()">📋 Copy</button>
+                <pre><code>@misc{jiang2026olafworldorientinglatentactions,
+      title={Olaf-World: Orienting Latent Actions for Video World Modeling}, 
+      author={Yuxin Jiang and Yuchao Gu and Ivor W. Tsang and Mike Zheng Shou},
+      year={2026},
+      eprint={2602.10104},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2602.10104}, 
+}</code></pre>
+            </div>
+        </section>
+
+        <footer>
+            <p style="margin-top: 10px;">This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
